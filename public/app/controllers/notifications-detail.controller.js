@@ -27,11 +27,11 @@
 				$scope.ngSortableOptions = constants.ngSortableOptions;
 
 				$scope.data = {
-					eventList: EventsList,
+					eventList: EventsList.data,
 					contentTypes: ContentTypes,
-					sources: Object.keys(EventsList.toJSON()),
-					mappers: Object.keys(MappersList.toJSON()),
-					emitters: Object.keys(EmittersList.toJSON())
+					sources: Object.keys(EventsList.toJSON().data),
+					mappers: MappersList.toJSON().data,
+					emitters: EmittersList.toJSON().data
 				};
 
 				// Extend the default resource controller

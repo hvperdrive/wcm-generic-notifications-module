@@ -15,7 +15,7 @@ module.exports.list = (req, res) => {
 		result = Emitter.listRegisterdEvents();
 	}
 
-	res.status(200).json(result);
+	res.status(200).json({ data: result });
 };
 
 module.exports.getMappers = (req, res) => res.status(200).json({ data: listener.mappers });
