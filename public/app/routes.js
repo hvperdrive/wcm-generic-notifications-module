@@ -1,65 +1,71 @@
 "use strict";
 
 (function(angular) {
-	angular.module("wcm-boilerplate_0.0.1")
+	angular.module("notifications_0.0.1")
 		.config([
 
 			"$stateProvider",
-			"boilerplateConfigProvider",
+			"notificationConfigProvider",
 
-			function ($stateProvider, boilerplateConfigProvider) {
+			function ($stateProvider, notificationConfigProvider) {
 
-				var moduleFolder = boilerplateConfigProvider.API.modulePath;
+				var moduleFolder = notificationConfigProvider.API.modulePath;
 
 				$stateProvider
 
-					.state("pelorus.wcm-boilerplate.index", {
+					.state("pelorus.notifications.index", {
 						url: "",
 						access: {
-							requiresLogin: true
+							requiresLogin: true,
 						},
 						resolve: {
-							ListData: ["boilerplateFactory", function(boilerplateFactory) {
-								return boilerplateFactory.get({ id: "public" }).$promise;
+							ListData: ["digEventsFactory", function(digEventsFactory) {
+								return digEventsFactory.query().$promise;
 							}],
 						},
 						ncyBreadcrumb: {
-							label: "{{breadcrumb}}"
+							label: "{{breadcrumb}}",
 						},
 						views: {
 							"": {
 								templateUrl: moduleFolder + "views/overview.html",
-								controller: "boilerplateOverviewController"
-							}
-						}
+								controller: "notificationsOverviewController",
+							},
+						},
 					})
 
-					.state("pelorus.wcm-boilerplate.edit", {
+					.state("pelorus.notifications.edit", {
 						url: "/{uuid}",
 						access: {
-							requiresLogin: true
+							requiresLogin: true,
 						},
 						resolve: {
-							InstanceData: ["boilerplateFactory", "$stateParams", function(boilerplateFactory, $stateParams) {
+							InstanceData: ["notificationsFactory", "$stateParams", function(notificationsFactory, $stateParams) {
 								if ($stateParams.uuid && $stateParams.uuid !== "new") {
-									return boilerplateFactory.get({ id: $stateParams.uuid }).$promise;
+									return notificationsFactory.get({ id: $stateParams.uuid }).$promise;
 								} else {
 									return {};
 								}
 							}],
+							EventsList: ["notificationsFactory", function(notificationsFactory) {
+								return notificationsFactory.get({ listController: "list" }).$promise;
+							}],
+							ContentTypes: ["$stateParams", "contentTypeFactory", function($stateParams, contentTypeFactory) {
+								return contentTypeFactory.get({ limit: -1 }).$promise;
+							}],
 						},
 						ncyBreadcrumb: {
-							label: "{{breadcrumb}}"
+							label: "{{breadcrumb}}",
 						},
 						views: {
 							"": {
 								templateUrl: "/app/core/resource/views/resource.html",
-								controller: "boilerplateDetailController"
+								controller: "notificationsDetailController",
 							},
-							"form@pelorus.wcm-boilerplate.edit": {
-								templateUrl: moduleFolder + "views/detail.html"
-							}
-						}
+							"form@pelorus.notifications.edit": {
+								templateUrl: moduleFolder + "views/detail.html",
+							},
+						},
 					});
 			}
 		]);

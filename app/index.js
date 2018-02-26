@@ -8,6 +8,9 @@ module.exports = (app, hooks, moduleInfo) => {
 	// Get variables
 	variablesHelper.reload(moduleInfo);
 
+	// Initiate listener
+	require("./helpers/listener");
+
 	// Handle hooks
 	hooksController.handleHooks(hooks);
 

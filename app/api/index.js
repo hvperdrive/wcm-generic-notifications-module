@@ -1,7 +1,10 @@
 "use strict";
 
-const exposedMethod = require("./exposedMethod");
+const listener = require("../helpers/listener").instance;
 
 module.exports = {
-	exposedMethod: exposedMethod
+	registerMapper: listener.registerMapper,
+	registerEmitter: listener.registerEmitter,
+	unregisterMapper: listener.unregisterMapper,
+	unregisterEmitter: listener.unregisterEmitter
 };

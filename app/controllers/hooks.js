@@ -1,20 +1,23 @@
 "use strict";
 
-const variablesHelper = require("../helpers/variables");
+const eventListener = require("../helpers/listener").instance;
+const variables = require("../helpers/variables");
 
-const onLoadComplete = () => {
-	// Initiate passport strategies
-	variablesHelper.reload();
-};
+const beforeRemove = () => eventListener.removeListeners();
 const onConfigurationChanged = () => {
-	// Initiate passport strategies
-	variablesHelper.reload();
+	return variables.reload()
+		.then(() => eventListener.reinitialize())
 };
+const onLoadComplete = () => {
+	return variables.reload()
+		.then(() => eventListener.reinitialize());
+}
 
-module.exports.handleHooks = (hooks) => {
+module.exports = function handleHooks(hooks) {
 	var myHooks = {
-		onLoadComplete: onLoadComplete,
+		beforeRemove: beforeRemove,
 		onConfigurationChanged: onConfigurationChanged,
+		onLoadComplete: onLoadComplete,
 	};
 
 	Object.assign(hooks, myHooks);
