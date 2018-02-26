@@ -19,8 +19,8 @@
 							requiresLogin: true,
 						},
 						resolve: {
-							ListData: ["digEventsFactory", function(digEventsFactory) {
-								return digEventsFactory.query().$promise;
+							ListData: ["notificationsFactory", function(notificationsFactory) {
+								return notificationsFactory.query().$promise;
 							}],
 						},
 						ncyBreadcrumb: {
