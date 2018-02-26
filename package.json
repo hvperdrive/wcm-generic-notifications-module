@@ -22,10 +22,10 @@
         "moduleConfig": {
             "angularModule": "notifications",
             "translationKey": "Notifications",
-            "operationType": "notification",
+            "operationType": "notifications",
             "icon": "bolt",
             "type": "system",
-            "machineName": "notification",
+            "machineName": "notifications",
             "navigationItem": true,
             "authentication": {
                 "requiresLogin": true
