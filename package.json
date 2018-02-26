@@ -20,7 +20,7 @@
         "angularDirPath": "public/app/",
         "cssDirPath": "public/styles/",
         "moduleConfig": {
-            "angularModule": "notification",
+            "angularModule": "notifications",
             "translationKey": "Notifications",
             "operationType": "notification",
             "icon": "bolt",
