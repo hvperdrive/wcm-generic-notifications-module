@@ -1,60 +1,82 @@
 {
-    "name": "@wcm/generic-notifications",
-    "version": "0.0.1",
-    "description": "Generic notification module",
-    "main": "app",
-    "scripts": {
-        "test": "NODE_ENV=test APP=test ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha"
+  "name": "@wcm/generic-notifications",
+  "version": "0.0.1",
+  "description": "Generic notification module",
+  "main": "app",
+  "scripts": {
+    "test": "NODE_ENV=test APP=test ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha"
+  },
+  "publishConfig": {
+    "@wcm:registry": "https://nexusrepo.antwerpen.be/repository/npm-private"
+  },
+  "keywords": [
+    "Notifications",
+    "WCM",
+    "Pelorus",
+    "module",
+    "CMS"
+  ],
+  "wcmModule": {
+    "angularDirPath": "public/app/",
+    "cssDirPath": "public/styles/",
+    "moduleConfig": {
+      "angularModule": "notifications",
+      "translationKey": "Notifications",
+      "operationType": "notifications",
+      "icon": "bolt",
+      "type": "system",
+      "machineName": "notifications",
+      "navigationItem": true,
+      "authentication": {
+        "requiresLogin": true
+      }
     },
-    "publishConfig": {
-        "@wcm:registry": "https://nexusrepo.antwerpen.be/repository/npm-private"
-    },
-    "keywords": [
-        "Notifications",
-        "WCM",
-        "Pelorus",
-        "module",
-        "CMS"
-    ],
-    "wcmModule": {
-        "angularDirPath": "public/app/",
-        "cssDirPath": "public/styles/",
-        "moduleConfig": {
-            "angularModule": "notifications",
-            "translationKey": "Notifications",
-            "operationType": "notifications",
-            "icon": "bolt",
-            "type": "system",
-            "machineName": "notifications",
-            "navigationItem": true,
-            "authentication": {
-                "requiresLogin": true
-            }
-        },
-        "variables": []
-    },
-    "author": "Jeroen Valcke",
-    "license": "ISC",
-    "dependencies": {
-        "@wcm/module-helper": "1.0.0",
-        "glob": "^7.1.2",
-        "path": "^0.12.7",
-        "q": "^1.5.1",
-        "ramda": "^0.25.0",
-        "rootpath": "~0.1.2"
-    },
-    "devDependencies": {
-        "@district01/eslint-config": "1.0.0",
-        "apidoc-swagger": "git+https://github.com/JvJefke/apidoc-swagger.git",
-        "chai": "~4.1.2",
-        "gulp": "~3.9.1",
-        "gulp-angular-templatecache": "~2.0.0",
-        "gulp-apidoc": "~0.2.0",
-        "gulp-apidoc-swagger": "~0.2.2",
-        "gulp-replace": "~0.5.4",
-        "istanbul": "^0.4.5",
-        "mocha": "~4.0.1",
-        "run-sequence": "~1.2.2",
-        "sinon": "~4.0.2"
-    }
+    "variables": [
+      {
+        "label": "Server URL",
+        "description": "Server URL (use ${topic} in url if needed).",
+        "key": "serverUrl",
+        "value": "",
+        "type": "text",
+        "required": true
+      },
+      {
+        "label": "Method",
+        "description": "Method to send the event",
+        "key": "method",
+        "value": "POST",
+        "type": "option",
+        "options": [
+          "POST",
+          "PUT"
+        ],
+        "required": true
+      }
+    ]
+  },
+  "author": "Jeroen Valcke",
+  "license": "ISC",
+  "dependencies": {
+    "@wcm/module-helper": "1.0.0",
+    "glob": "^7.1.2",
+    "path": "^0.12.7",
+    "q": "^1.5.1",
+    "ramda": "^0.25.0",
+    "request": "^2.83.0",
+    "rootpath": "~0.1.2"
+  },
+  "devDependencies": {
+    "@district01/eslint-config": "1.0.0",
+    "apidoc-swagger": "git+https://github.com/JvJefke/apidoc-swagger.git",
+    "chai": "~4.1.2",
+    "gulp": "~3.9.1",
+    "gulp-angular-templatecache": "~2.0.0",
+    "gulp-apidoc": "~0.2.0",
+    "gulp-apidoc-swagger": "~0.2.2",
+    "gulp-replace": "~0.5.4",
+    "istanbul": "^0.4.5",
+    "mocha": "~4.0.1",
+    "run-sequence": "~1.2.2",
+    "sinon": "~4.0.2"
+  }
 }

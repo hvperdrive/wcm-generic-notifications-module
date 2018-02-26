@@ -80,6 +80,7 @@
 											name="source"
 											type="'select'"
 											model="event.mapper"
+											ng-init="event.mapper = event.mapper || 'default'"
 											placeholder="'Select a mapper' | translate"
 											field-data="resourceForms.metaForm"
 											options="data.mappers">
@@ -90,6 +91,7 @@
 											name="source"
 											type="'select'"
 											model="event.emitter"
+											ng-init="event.emitter = event.emitter || 'default'"
 											placeholder="'Select an emitter' | translate"
 											field-data="resourceForms.metaForm"
 											options="data.emitters">

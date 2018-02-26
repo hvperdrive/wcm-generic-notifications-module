@@ -2,9 +2,11 @@
 
 const R = require("ramda");
 const Q = require("q");
+const request = require("request")
 
 const config = require("@wcm/module-helper").getConfig();
 const Emitter = require("@wcm/module-helper").emitter; // WCM emitter
+const moduleConfig = require("../variables");
 const EventsModel = require("../../models/notification");
 
 // FILTERS
@@ -21,6 +23,29 @@ const contentFilter = (item) => {
 		return ct === ctLabel;
 	};
 };
+
+const sendDefaultData = (event, data) => {
+	const _conf = moduleConfig.get();
+
+	if (!_conf.serverUrl) {
+		return;
+	}
+
+	const serverUrl = _conf.serverUrl.replace(/\$\{topic\}/, event.topic);
+	const method = _conf.method;
+
+	request({
+		url: serverUrl,
+		method: method,
+		body: data
+	}, (err, response, body) => {
+		if (err) {
+			return console.log(err);
+		}
+
+		console.log("Default request result: ", body);
+	});
+}
 
 class Listener {
 	/**
@@ -60,10 +85,10 @@ class Listener {
 	constructor() {
 		this._config = null;
 		this._mappers = {
-			testMapper: (eventName, event, data) => console.log(eventName, event) || data
+			default: (eventName, event, data) => (data)
 		};
 		this._emitters = {
-			testEmitter: (eventName, event, data) => console.log(eventName, event, data)
+			default: (eventName, event, data) => sendDefaultData(event, data)
 		};
 
 		this.reinitialize();
@@ -101,6 +126,7 @@ class Listener {
 		EventsModel.find({})
 			.populate("data.contentType")
 			.lean()
+			.exec()
 			.then((response) => this._config = this._parseConfig(response))
 	}
 
@@ -150,8 +176,6 @@ class Listener {
 		if (!event || !event.topic || !data) {
 			return Q.reject();
 		}
-
-		const topic = config.name + "_" + event.topic;
 
 		if (event.mapper && typeof this._mappers[event.mapper] === "function") {
 			data = this._mappers[event.mapper](eventName, event, data);
