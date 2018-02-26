@@ -4,6 +4,8 @@ const setupRoutes = require("./routes");
 const variablesHelper = require("./helpers/variables");
 const hooksController = require("./controllers/hooks");
 
+
+// Entry point of this module BE
 module.exports = (app, hooks, moduleInfo) => {
 	// Get variables
 	variablesHelper.reload(moduleInfo);

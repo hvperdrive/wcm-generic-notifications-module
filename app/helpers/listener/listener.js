@@ -4,7 +4,7 @@ const R = require("ramda");
 const Q = require("q");
 
 const config = require("@wcm/module-helper").getConfig();
-const Emitter = require("@wcm/module-helper").emitter;
+const Emitter = require("@wcm/module-helper").emitter; // WCM emitter
 const EventsModel = require("../../models/notification");
 
 // FILTERS
@@ -47,6 +47,7 @@ class Listener {
 		this._registerListeners();
 	}
 
+	// Stop listening for WCM events
 	removeListeners() {
 		Emitter.offAny(this._selector);
 	}
@@ -67,25 +68,40 @@ class Listener {
 		this._emitters = R.reject((emitter) => emitter.name === name)(this._emitters);
 	}
 
-    reloadConfig() {
+	reloadConfig() {
 		EventsModel.find({})
 			.populate("data.contentType")
 			.lean()
-            .then((response) => this._config = this._parseConfig(response))
-            .then(() => console.log(this._config));
+			.then((response) => this._config = this._parseConfig(response))
+			.then(() => console.log(this._config));
 	}
 
 	// PRIVATES
-
+	// Listen for all events of the module system
 	_registerListeners() {
-		Emitter.prependAny((name, data) => this._selector(name, data));
+		Emitter.prependAny(this._selector.bind(this));
 	}
 
+	// Handle event
+	_selector(name, data) {
+		const eventName = Array.isArray(name) ? name.join(".") : name;
+		// Get configured events
+		const requiredEvents = this._getRequiredEvents(name, data);
+
+		// Don't do anything with this event since nothing is configured for it.
+		if (!Array.isArray(requiredEvents) || !requiredEvents.length) {
+			return;
+		}
+
+		// Send registerd events to the mappers and emitters (todo)
+		requiredEvents.forEach((event) => Q(this._sendEvent(event, data)));
+	}
+
+	// Get configured events based on the name and data;
 	_getRequiredEvents(name, data) {
 		if (this._config === null || !this._config[name]) {
 			return;
-        }
-
+		}
 
 		const eventGroup = this._config[name];
 
@@ -100,18 +116,6 @@ class Listener {
 		});
 	}
 
-	_selector(name, data) {
-        const eventName = Array.isArray(name) ? name.join(".") : name;
-        const requiredEvents = this._getRequiredEvents(name, data);
-
-		if (!Array.isArray(requiredEvents) || !requiredEvents.length) {
-			return;
-		}
-
-		requiredEvents.forEach((event) => Q(this._sendEvent(event, data)));
-	}
-
-
 	_sendEvent(event, data) {
 		if (!event || !event.topic || !data) {
 			return Q.reject();
@@ -121,8 +125,11 @@ class Listener {
 
 		console.log("SENDING EVENT", event, topic);
 		console.log("DATA:", data);
+
+		// TODO: HANDLE MAPPERS & EMITTERS HERE
 	}
 
+	// Setup config (cache) based on configured events
 	_parseConfig(items) {
 		const setFilter = (event, item) => {
 			const source = R.pathOr(false, ["meta", "source"], item);
@@ -135,10 +142,11 @@ class Listener {
 		const reduceConfigItem = (acc, item) => R.compose(
 			R.always(acc),
 			R.forEach((event) => {
-                const eventName = item.meta.source + "." + event.name;
+				const eventName = item.meta.source + "." + event.name;
+
 				if (!acc[eventName]) {
 					acc[eventName] = [];
-                }
+				}
 
 				acc[eventName].push({
 					topic: event.topic,

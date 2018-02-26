@@ -2,6 +2,7 @@
 
 const listener = require("../helpers/listener").instance;
 
+// Exposed methods (available for other modules)
 module.exports = {
 	registerMapper: listener.registerMapper,
 	registerEmitter: listener.registerEmitter,

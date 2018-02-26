@@ -10,6 +10,7 @@ module.exports.get = () => variables;
 
 module.exports.getPackageInfo = () => packageInfo;
 
+// Get config using the module system
 module.exports.reload = (info) => {
 	packageInfo = info || packageInfo || null;
 
