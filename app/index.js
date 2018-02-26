@@ -12,7 +12,7 @@ module.exports = (app, hooks, moduleInfo) => {
 	require("./helpers/listener");
 
 	// Handle hooks
-	hooksController.handleHooks(hooks);
+	hooksController(hooks);
 
 	// Setup routes
 	setupRoutes(app, moduleInfo);

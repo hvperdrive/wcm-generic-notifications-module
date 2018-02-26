@@ -4,7 +4,7 @@ const R = require("ramda");
 const Q = require("q");
 
 const Emitter = require("@wcm/module-helper").emitter;
-const EventsModel = require("../models/events");
+const EventsModel = require("../../models/notification");
 
 // FILTERS
 const contentFilter = (item) => {
@@ -22,11 +22,21 @@ const contentFilter = (item) => {
 };
 
 class Listener {
-	config = null;
-	mappers = [];
-	emitters = [];
+	get config() {
+		return this._config;
+	}
+	get mappers() {
+		return this._mappers.map((mapper) => ({ name: mapper.name }));
+	}
+	get emitters() {
+		return this._emitters.map((emitter) => emitter.name === name);
+	}
 
 	constructor() {
+		this._config = null;
+		this._mappers = [];
+		this._emitters = [];
+
 		this.reinitialize();
 	}
 
@@ -36,32 +46,24 @@ class Listener {
 		this._registerListeners();
 	}
 
-	removeListeners () {
+	removeListeners() {
 		Emitter.offAny(this._selector);
 	}
 
-	getMappers() {
-		return this.mappers.map((mapper) => ({ name: mapper.name }));
-	}
-
 	registerMapper(mapperConfig) {
-		this.mappers.push(mapperConfig);
+		this._mappers.push(mapperConfig);
 	}
 
 	unregisterMapper(name) {
-		this.mappers = R.reject((mapper) => mapper.name === name)(this.mappers);
-	}
-
-	getEmitters() {
-		return this.emitters.map((emitter) => emitter.name === name)(this.emitters);
+		this._mappers = R.reject((mapper) => mapper.name === name)(this._mappers);
 	}
 
 	registerEmitter(emitterConfig) {
-		this.emitters.push(emitterConfig);
+		this._emitters.push(emitterConfig);
 	}
 
 	unregisterEmitter(name) {
-		this.emitters = R.reject((emitter) => emitter.name === name)(this.emitters);
+		this._emitters = R.reject((emitter) => emitter.name === name)(this._emitters);
 	}
 
 
@@ -70,29 +72,19 @@ class Listener {
 		EventsModel.find({})
 			.populate("data.contentType")
 			.lean()
-			.then((response) => this.config = this._parseConfig(response));
+			.then((response) => this._config = this._parseConfig(response));
 	}
 
 	_registerListeners() {
-		Emitter.prependAny(this._selector);
-	}
-
-	_selector(name, data) {
-		const requiredEvents = this._getRequiredEvents(name, data);
-
-		if (!Array.isArray(requiredEvents) || !requiredEvents.length) {
-			return;
-		}
-
-		requiredEvents.forEach((event) => Q(this._sendEvent(event, data)));
+		Emitter.prependAny((name, data) => this._selector(name, data));
 	}
 
 	_getRequiredEvents(name, data) {
-		if (this.config === null || !this.config[name]) {
+		if (this._config === null || !this._config[name]) {
 			return;
 		}
 
-		const eventGroup = this.config[name];
+		const eventGroup = this._config[name];
 
 		return eventGroup.filter((event) => {
 			if (typeof event.filter === "function") {
@@ -105,18 +97,26 @@ class Listener {
 		});
 	}
 
+	_selector(name, data) {
+		const requiredEvents = this._getRequiredEvents(name, data);
+
+		if (!Array.isArray(requiredEvents) || !requiredEvents.length) {
+			return;
+		}
+
+		requiredEvents.forEach((event) => Q(this._sendEvent(event, data)));
+	}
+
+
 	_sendEvent(event, data) {
+		if (!event || !event.topic || !data) {
+			return Q.reject();
+		}
 
-		console.log("SENDING EVENT", event);
+		const topic = config.name + "_" + event.topic;
+
+		console.log("SENDING EVENT", event, topic);
 		console.log("DATA:", data);
-
-		// if (!event || !event.topic || !data) {
-		// 	return Q.reject();
-		// }
-
-		// const topic = config.name + "_" + event.topic;
-
-		// return eventRequestHelper("PUT", topic + "/publish", data);
 	}
 
 	_parseConfig(items) {

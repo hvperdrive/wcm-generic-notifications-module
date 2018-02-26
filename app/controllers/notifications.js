@@ -5,8 +5,8 @@ const path = require("path");
 const ERROR_TYPES = require(path.join(process.cwd(), "app/middleware/errorInterceptor")).ERROR_TYPES;
 const Emitter = require("@wcm/module-helper").emitter;
 
-const EventsModel = require("../models/events");
-const topicsHelper = require("../helpers/topics");
+const EventsModel = require("../models/notification");
+// const topicsHelper = require("../helpers/topics");
 
 module.exports.list = (req, res) => {
 	let result = ["contentUpdated", "contentCreated", "contentRemoved"];
@@ -96,19 +96,20 @@ module.exports.update = function update(req, res) {
 		.lean()
 		.then(function onSuccess(oldEvent) {
 			return EventsModel.findOneAndUpdate({ uuid: req.params.uuid }, req.body, { new: true, setDefaultsOnInsert: true })
-				.then(function(newEvent) {
+				.then(function (newEvent) {
 					if (newEvent) {
-						return topicsHelper.update(oldEvent, newEvent);
+						// return topicsHelper.update(oldEvent, newEvent);
+						return;
 					}
 
 					throw { status: 404, err: "Event width uuid: '" + req.params.uuid + "' not found" };
 				});
-		}, function(error) {
+		}, function (error) {
 			throw { status: 400, err: error };
 		})
-		.then(function(newEvent) {
+		.then(function (newEvent) {
 			return res.status(200).json(newEvent);
-		}, function(error) {
+		}, function (error) {
 			return res.status(error.status || 400).json({ err: error.err || error });
 		});
 };
@@ -129,7 +130,7 @@ module.exports.create = (req, res) => {
 				throw "Event not saved!";
 			}
 
-			return topicsHelper.create(event);
+			// return topicsHelper.create(event);
 		}).then(
 			(event) => res.status(200).json(event),
 			(responseError) => res.status(400).json({ err: responseError })
@@ -157,7 +158,7 @@ module.exports.remove = (req, res) => {
 
 	EventsModel.findOne({ uuid: req.params.uuid })
 		.then((event) => EventsModel.remove({ uuid: req.params.uuid }).then(() => event))
-		.then(topicsHelper.remove)
+		// .then(topicsHelper.remove)
 		.then(
 			() => res.status(204).send(),
 			(responseError) => res.status(400).json({ err: responseError })
