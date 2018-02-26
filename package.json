@@ -20,7 +20,7 @@
         "angularDirPath": "public/app/",
         "cssDirPath": "public/styles/",
         "moduleConfig": {
-            "angularModule": "wcm-notification",
+            "angularModule": "notification",
             "translationKey": "Notifications",
             "operationType": "notification",
             "icon": "bolt",
