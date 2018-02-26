@@ -45,7 +45,7 @@ class Listener {
 	 * }
 	 */
 	get mappers() {
-		return Object.keys(this.mappers);
+		return Object.keys(this._mappers);
 	}
 
 	/**
@@ -54,7 +54,7 @@ class Listener {
 	 * }
 	 */
 	get emitters() {
-		return Object.keys(this.mappers);
+		return Object.keys(this._emitters);
 	}
 
 	constructor() {
@@ -188,6 +188,8 @@ class Listener {
 
 				acc[eventName].push({
 					topic: event.topic,
+					mapper: event.mapper,
+					emitter: event.emitter,
 					filter: setFilter(event, item),
 				});
 			}),
