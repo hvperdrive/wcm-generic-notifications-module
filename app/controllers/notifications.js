@@ -6,6 +6,7 @@ const ERROR_TYPES = require(path.join(process.cwd(), "app/middleware/errorInterc
 const Emitter = require("@wcm/module-helper").emitter;
 
 const EventsModel = require("../models/notification");
+const listener = require("../helpers/listener").instance;
 // const topicsHelper = require("../helpers/topics");
 
 module.exports.list = (req, res) => {
@@ -98,8 +99,8 @@ module.exports.update = function update(req, res) {
 			return EventsModel.findOneAndUpdate({ uuid: req.params.uuid }, req.body, { new: true, setDefaultsOnInsert: true })
 				.then(function (newEvent) {
 					if (newEvent) {
-						// return topicsHelper.update(oldEvent, newEvent);
-						return;
+                        listener.reloadConfig();
+                        return newEvent;
 					}
 
 					throw { status: 404, err: "Event width uuid: '" + req.params.uuid + "' not found" };
@@ -130,6 +131,9 @@ module.exports.create = (req, res) => {
 				throw "Event not saved!";
 			}
 
+            listener.reloadConfig();
+
+            return event;
 			// return topicsHelper.create(event);
 		}).then(
 			(event) => res.status(200).json(event),
@@ -157,8 +161,8 @@ module.exports.remove = (req, res) => {
 	}
 
 	EventsModel.findOne({ uuid: req.params.uuid })
-		.then((event) => EventsModel.remove({ uuid: req.params.uuid }).then(() => event))
-		// .then(topicsHelper.remove)
+        .then((event) => EventsModel.remove({ uuid: req.params.uuid }).then(() => event))
+        .then(() => listener.reloadConfig())
 		.then(
 			() => res.status(204).send(),
 			(responseError) => res.status(400).json({ err: responseError })

@@ -3,6 +3,7 @@
 const R = require("ramda");
 const Q = require("q");
 
+const config = require("@wcm/module-helper").getConfig();
 const Emitter = require("@wcm/module-helper").emitter;
 const EventsModel = require("../../models/notification");
 
@@ -42,7 +43,7 @@ class Listener {
 
 	// PUBLICS
 	reinitialize() {
-		this._reloadConfig();
+		this.reloadConfig();
 		this._registerListeners();
 	}
 
@@ -66,14 +67,15 @@ class Listener {
 		this._emitters = R.reject((emitter) => emitter.name === name)(this._emitters);
 	}
 
-
-	// PRIVATES
-	_reloadConfig() {
+    reloadConfig() {
 		EventsModel.find({})
 			.populate("data.contentType")
 			.lean()
-			.then((response) => this._config = this._parseConfig(response));
+            .then((response) => this._config = this._parseConfig(response))
+            .then(() => console.log(this._config));
 	}
+
+	// PRIVATES
 
 	_registerListeners() {
 		Emitter.prependAny((name, data) => this._selector(name, data));
@@ -82,7 +84,8 @@ class Listener {
 	_getRequiredEvents(name, data) {
 		if (this._config === null || !this._config[name]) {
 			return;
-		}
+        }
+
 
 		const eventGroup = this._config[name];
 
@@ -98,7 +101,8 @@ class Listener {
 	}
 
 	_selector(name, data) {
-		const requiredEvents = this._getRequiredEvents(name, data);
+        const eventName = Array.isArray(name) ? name.join(".") : name;
+        const requiredEvents = this._getRequiredEvents(name, data);
 
 		if (!Array.isArray(requiredEvents) || !requiredEvents.length) {
 			return;
@@ -131,11 +135,12 @@ class Listener {
 		const reduceConfigItem = (acc, item) => R.compose(
 			R.always(acc),
 			R.forEach((event) => {
-				if (!acc[event.name]) {
-					acc[event.name] = [];
-				}
+                const eventName = item.meta.source + "." + event.name;
+				if (!acc[eventName]) {
+					acc[eventName] = [];
+                }
 
-				acc[event.name].push({
+				acc[eventName].push({
 					topic: event.topic,
 					filter: setFilter(event, item),
 				});
