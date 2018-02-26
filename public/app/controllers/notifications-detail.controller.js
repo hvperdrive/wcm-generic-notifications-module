@@ -16,9 +16,11 @@
 			// Resolves
 			"InstanceData",
 			"EventsList",
+			"MappersList",
+			"EmittersList",
 			"ContentTypes",
 
-			function($scope, $controller, constants, LabelService, notificationsFactory, InstanceData, EventsList, ContentTypes) {
+			function($scope, $controller, constants, LabelService, notificationsFactory, InstanceData, EventsList, MappersList, EmittersList, ContentTypes) {
 
 				// Referencing the required factory
 				$scope._factory = notificationsFactory;
@@ -28,6 +30,8 @@
 					eventList: EventsList,
 					contentTypes: ContentTypes,
 					sources: Object.keys(EventsList.toJSON()),
+					mappers: Object.keys(MappersList.toJSON()),
+					emitters: Object.keys(EmittersList.toJSON())
 				};
 
 				// Extend the default resource controller
