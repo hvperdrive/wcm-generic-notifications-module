@@ -21,4 +21,4 @@ module.exports = (app, hooks, moduleInfo) => {
 };
 
 // Exposed API (for other modules)
-module.exports.api = require("./api");
+module.exports.API = require("./api");
