@@ -15,7 +15,7 @@ This module listens for internal events and sends the events elsewhere using oth
 
 ## Usage
 
-The user can configure which events to listen and where to send them using the notification menu item.
+The user can configure which events to listen to and where to send them using the notification menu item.
 You can configure it like so:
 
 1. Fill in an administration name
@@ -30,6 +30,8 @@ You can configure it like so:
 ### API
 You can find the API reference in the swagger/output folder as a swagger definition.
 You can beautify the output by copying the content into a swagger editor (eg. http://editor.swagger.io/#/).
+
+### Implementation
 
 The module exposes the following methods:
 - registerMapper
@@ -54,20 +56,31 @@ The module exposes the following methods:
 #### Example usage
 
 ```javascript
+const request = require("request");
 const ModuleHelper = require("@wcm/module-helper");
-const notificationAPI = null;
 
-moduleHelper.getModule("@wcm/generic-notifications")
-    .then((notificationAPI) => {
+ModuleHelper.getModule("@wcm/generic-notifications")
+    .then((notificationModule) => {
         // This is an example mapper that just returns the data as is. (same as default mapper)
         notificationAPI.registerMapper(
             "someName", 
             (eventName, configuredEvent, data) => data; 
         );
+
+        // This is an example emitter that sends the event to a service using request library.
+        // Notice the type query parameter that is being sent. The topic of the configuredEvent can be used as scope or namespace.
+        notificationAPI.registerEmitter(
+            "someName",
+            (eventName, configuredEvent, data) => request({
+                url: "someUrl",
+                qs: {
+                    type: configuredEvent.topic
+                },
+                method: "POST"
+            }, (err, response, body) => err ? console.log("oh oooh...", err) : console.log(body))
+        )
     });
 ```
-
-### Implementation
 
 ### Important notes
 
