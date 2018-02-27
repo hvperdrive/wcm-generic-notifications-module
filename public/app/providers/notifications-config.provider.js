@@ -1,8 +1,8 @@
 "use strict";
 
 (function(angular) {
-	angular.module("wcm-boilerplate_0.0.1")
-		.provider("boilerplateConfig", [
+	angular.module("notifications_0.0.1")
+		.provider("notificationConfig", [
 
 			"MODULE_ENV_CONFIG",
 

@@ -1,11 +1,105 @@
-<div class="content--inner">
+<div class="content--inner members">
 
-	<h1 class="c-page-title">
-		<span translate>Edit</span>
-	</h1>
+	<h1 class="c-page-title"><span translate>Edit</span> <i>{{itemData.data.name}}</i></h1>
 
 	<div ng-form name="resourceForms.itemForm">
-		<span class="customClass">Something with custom styling from the module as an example</span>
+		<fieldset class="c-form__fieldset">
+			<legend class="c-form__fieldset__legend" translate>Meta information</legend>
+
+			<div class="form-section c-form__fieldset__content u-clear">
+				<field
+					class="u-width-6-6"
+					label="'Administration name' | translate"
+					secondary-label="'The reference name in the WCM' | translate"
+					name="title"
+					type="'text'"
+					model="itemData.meta.label"
+					field-data="resourceForms.metaForm"
+					required="true"
+					readonly="!_newInstance"
+					placeholder="'Administration name' | translate">
+				</field>
+
+				<field
+					class="u-width-6-6"
+					label="'Source' | translate"
+					name="source"
+					type="'select'"
+					model="itemData.meta.source"
+					placeholder="'Select a source' | translate"
+					disabled="!_newInstance"
+					field-data="resourceForms.metaForm"
+					required="true"
+					options="data.sources">
+				</field>
+			</div>
+		</fieldset>
+
+		<fieldset class="c-form__fieldset">
+			<legend class="c-form__fieldset__legend" translate>Event</legend>
+
+			<div class="form-section c-form__fieldset__content u-clear">
+				<field
+					ng-if="itemData.meta.source === 'content'"
+					class="u-width-6-6"
+					label="'Content type' | translate"
+					name="contentType"
+					type="'select'"
+					qlabel="meta.label"
+					track="uuid"
+					model="itemData.data.contentType"
+					placeholder="'Select a content type' | translate"
+					field-data="resourceForms.metaForm"
+					required="true"
+					options="data.contentTypes.data">
+				</field>
+
+				 <div class="c-input_inner u-width-6-6">
+					<label for="contentType" class="c-label required" translate>Event</label>
+					<ul ng-if="itemData.data.events && itemData.data.events.length > 0" class="c-draggable-list no-borders" ng-sortable="ngSortableOptions">
+						<li class="c-draggable-list__item u-clear" ng-repeat="event in itemData.data.events track by $index">
+							<table class="no-margin">
+								<tr>
+									<td class="u-width-1-6">
+										<span class="c-draggable-list__handle">::</span>
+									</td>
+									<td class="u-width-4-6">
+										<field
+											label="'Internal event' | translate"
+											name="eventName_{{$index}}"
+											type="'select'"
+											model="event.name"
+											placeholder="'Select a event' | translate"
+											field-data="resourceForms.metaForm"
+											required="true"
+											options="data.eventList[itemData.meta.source]">
+										</field>
+										<field
+											label="'Topic' | translate"
+											name="endpoint_{{$index}}"
+											type="'text'"
+											model="event.topic"
+											placeholder="'Enter a topic' | translate"
+											field-data="resourceForms.metaForm"
+											required="true">
+										</field>
+									</td>
+									<td class="u-width-1-6">
+										<i class="c-draggable-list__action fr fa fa-fw fa-close" ng-click="removeEvent($index)"></i>
+									</td>
+								</tr>
+							</table>
+						</li>
+                    </ul>
+                    <div class="u-margin-top-xs" ng-if="!itemData.data.events || itemData.data.events.length === 0">No events configured yet</div>
+					<div class="u-margin-bottom u-margin-top">
+						<button class="c-button c-button--sm c-button--alpha" ng-click="newEvent()" translate>Add Event</button>
+					</div>
+				</div>
+
+			</div>
+		</fieldset>
+
 	</div>
 
 </div>
