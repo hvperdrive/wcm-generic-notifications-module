@@ -54,6 +54,8 @@ class Listener {
 	 * 		[event_type]: {
 	 * 			[event_method]: {
 	 * 				topic: "String",
+	 * 				mapper: "String", // optional
+	 * 				emitter: "String", // optional
 	 * 				filter: "Function" // optional
 	 * 			}
 	 * 		}
@@ -185,10 +187,11 @@ class Listener {
 			return this._emitters[event.mapper](eventName, event, data);
 		}
 
+		// Default emitter
+		return sendDefaultData(event, data);
+
 		console.log("SENDING EVENT", event, topic);
 		console.log("DATA:", data);
-
-		// TODO: HANDLE MAPPERS & EMITTERS HERE
 	}
 
 	// Setup config (cache) based on configured events
