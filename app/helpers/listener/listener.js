@@ -183,8 +183,8 @@ class Listener {
 			data = this._mappers[event.mapper](eventName, event, data);
 		}
 
-		if (this._emitters && typeof this._emitters[event.mapper] === "function") {
-			return this._emitters[event.mapper](eventName, event, data);
+		if (this._emitters && typeof this._emitters[event.emitter] === "function") {
+			return this._emitters[event.emitter](eventName, event, data);
 		}
 
 		// Default emitter
