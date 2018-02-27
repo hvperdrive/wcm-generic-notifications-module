@@ -12,7 +12,7 @@ module.exports = {
 	 * 		data: Any
 	 * )
 	 */
-	registerMapper: listener.registerMapper,
+	registerMapper: listener.registerMapper.bind(listener),
 
 	/**
 	 * name: String,
@@ -22,15 +22,15 @@ module.exports = {
 	 * 		data: Any
 	 * )
 	 */
-	registerEmitter: listener.registerEmitter,
+	registerEmitter: listener.registerEmitter.bind(listener),
 
 	/**
 	 * name: String
 	 */
-	unregisterMapper: listener.unregisterMapper,
+	unregisterMapper: listener.unregisterMapper.bind(listener),
 
 	/**
 	 * name: String
 	 */
-	unregisterEmitter: listener.unregisterEmitter
+	unregisterEmitter: listener.unregisterEmitter.bind(listener)
 };
