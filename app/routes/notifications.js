@@ -25,6 +25,8 @@ module.exports = function(app) {
 
 	app.route(baseUrl).get(ProfileSecurity, MethodSecurity.read, PermissionsSecurity, NotificationsController.read);
 	app.route(baseUrl + "/list").get(ProfileSecurity, MethodSecurity.read, PermissionsSecurity, NotificationsController.list);
+	app.route(baseUrl + "/mappers").get(ProfileSecurity, MethodSecurity.read, PermissionsSecurity, NotificationsController.getMappers);
+	app.route(baseUrl + "/emitters").get(ProfileSecurity, MethodSecurity.read, PermissionsSecurity, NotificationsController.getEmitters);
 	app.route(baseUrl + "/:uuid").get(ProfileSecurity, MethodSecurity.read, PermissionsSecurity, NotificationsController.readOne);
 
 	app.route(baseUrl).post(ProfileSecurity, MethodSecurity.create, PermissionsSecurity, Meta, NotificationsController.create);

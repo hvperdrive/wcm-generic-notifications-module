@@ -16,18 +16,22 @@
 			// Resolves
 			"InstanceData",
 			"EventsList",
+			"MappersList",
+			"EmittersList",
 			"ContentTypes",
 
-			function($scope, $controller, constants, LabelService, notificationsFactory, InstanceData, EventsList, ContentTypes) {
+			function($scope, $controller, constants, LabelService, notificationsFactory, InstanceData, EventsList, MappersList, EmittersList, ContentTypes) {
 
 				// Referencing the required factory
 				$scope._factory = notificationsFactory;
 				$scope.ngSortableOptions = constants.ngSortableOptions;
 
 				$scope.data = {
-					eventList: EventsList,
+					eventList: EventsList.data,
 					contentTypes: ContentTypes,
-					sources: Object.keys(EventsList.toJSON()),
+					sources: Object.keys(EventsList.toJSON().data),
+					mappers: MappersList.toJSON().data,
+					emitters: EmittersList.toJSON().data
 				};
 
 				// Extend the default resource controller

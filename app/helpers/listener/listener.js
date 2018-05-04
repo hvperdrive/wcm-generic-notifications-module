@@ -2,9 +2,11 @@
 
 const R = require("ramda");
 const Q = require("q");
+const request = require("request")
 
 const config = require("@wcm/module-helper").getConfig();
 const Emitter = require("@wcm/module-helper").emitter; // WCM emitter
+const moduleConfig = require("../variables");
 const EventsModel = require("../../models/notification");
 
 // FILTERS
@@ -22,26 +24,80 @@ const contentFilter = (item) => {
 	};
 };
 
+const sendDefaultData = (event, data) => {
+	const _conf = moduleConfig.get();
+
+	if (!_conf.serverUrl) {
+		return;
+	}
+
+	const serverUrl = _conf.serverUrl.replace(/\$\{topic\}/, event.topic);
+	const method = _conf.method;
+
+	request({
+		url: serverUrl,
+		method: method,
+		body: data
+	}, (err, response, body) => {
+		if (err) {
+			return console.log(err);
+		}
+
+		console.log("Default request result: ", body);
+	});
+}
+
 class Listener {
+	/**
+	 * Config schema
+	 * {
+	 * 		[event_type]: {
+	 * 			[event_method]: {
+	 * 				topic: "String",
+	 * 				mapper: "String", // optional
+	 * 				emitter: "String", // optional
+	 * 				filter: "Function" // optional
+	 * 			}
+	 * 		}
+	 * }
+	 */
 	get config() {
 		return this._config;
 	}
+
+	/**
+	 * Mapper schema
+	 * {
+	 * 		[name]: "Function"
+	 * }
+	 */
 	get mappers() {
-		return this._mappers.map((mapper) => ({ name: mapper.name }));
+		return Object.keys(this._mappers);
 	}
+
+	/**
+	 * {
+	 * 		[name]: "Function"
+	 * }
+	 */
 	get emitters() {
-		return this._emitters.map((emitter) => emitter.name === name);
+		return Object.keys(this._emitters);
 	}
 
 	constructor() {
 		this._config = null;
-		this._mappers = [];
-		this._emitters = [];
+		this._mappers = {
+			default: (eventName, event, data) => (data)
+		};
+		this._emitters = {
+			default: (eventName, event, data) => sendDefaultData(event, data)
+		};
 
 		this.reinitialize();
 	}
 
 	// PUBLICS
+
 	reinitialize() {
 		this.reloadConfig();
 		this._registerListeners();
@@ -52,31 +108,32 @@ class Listener {
 		Emitter.offAny(this._selector);
 	}
 
-	registerMapper(mapperConfig) {
-		this._mappers.push(mapperConfig);
+	registerMapper(name, fn) {
+		this._mappers[name] = fn;
 	}
 
 	unregisterMapper(name) {
-		this._mappers = R.reject((mapper) => mapper.name === name)(this._mappers);
+		delete this._mappers[name];
 	}
 
-	registerEmitter(emitterConfig) {
-		this._emitters.push(emitterConfig);
+	registerEmitter(name, fn) {
+		this._emitters[name] = fn;
 	}
 
 	unregisterEmitter(name) {
-		this._emitters = R.reject((emitter) => emitter.name === name)(this._emitters);
+		delete this._emitters[name];
 	}
 
 	reloadConfig() {
 		EventsModel.find({})
 			.populate("data.contentType")
 			.lean()
+			.exec()
 			.then((response) => this._config = this._parseConfig(response))
-			.then(() => console.log(this._config));
 	}
 
 	// PRIVATES
+
 	// Listen for all events of the module system
 	_registerListeners() {
 		Emitter.prependAny(this._selector.bind(this));
@@ -84,6 +141,7 @@ class Listener {
 
 	// Handle event
 	_selector(name, data) {
+		// Convert event name when event is an array
 		const eventName = Array.isArray(name) ? name.join(".") : name;
 		// Get configured events
 		const requiredEvents = this._getRequiredEvents(name, data);
@@ -94,7 +152,7 @@ class Listener {
 		}
 
 		// Send registerd events to the mappers and emitters (todo)
-		requiredEvents.forEach((event) => Q(this._sendEvent(event, data)));
+		requiredEvents.forEach((event) => Q(this._sendEvent(eventName, event, data)));
 	}
 
 	// Get configured events based on the name and data;
@@ -116,17 +174,24 @@ class Listener {
 		});
 	}
 
-	_sendEvent(event, data) {
+	_sendEvent(eventName, event, data) {
 		if (!event || !event.topic || !data) {
 			return Q.reject();
 		}
 
-		const topic = config.name + "_" + event.topic;
+		if (event.mapper && typeof this._mappers[event.mapper] === "function") {
+			data = this._mappers[event.mapper](eventName, event, data);
+		}
+
+		if (this._emitters && typeof this._emitters[event.emitter] === "function") {
+			return this._emitters[event.emitter](eventName, event, data);
+		}
+
+		// Default emitter
+		return sendDefaultData(event, data);
 
 		console.log("SENDING EVENT", event, topic);
 		console.log("DATA:", data);
-
-		// TODO: HANDLE MAPPERS & EMITTERS HERE
 	}
 
 	// Setup config (cache) based on configured events
@@ -150,6 +215,8 @@ class Listener {
 
 				acc[eventName].push({
 					topic: event.topic,
+					mapper: event.mapper,
+					emitter: event.emitter,
 					filter: setFilter(event, item),
 				});
 			}),

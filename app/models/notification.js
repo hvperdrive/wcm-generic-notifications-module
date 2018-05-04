@@ -23,6 +23,12 @@ var NotificationsSchema = new Schema({
 				type: String,
 				required: true,
 			},
+			mapper: {
+				type: String
+			},
+			emitter: {
+				type: String
+			},
 			topic: {
 				type: String,
 				required: true,

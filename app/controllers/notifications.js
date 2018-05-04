@@ -7,7 +7,6 @@ const Emitter = require("@wcm/module-helper").emitter;
 
 const EventsModel = require("../models/notification");
 const listener = require("../helpers/listener").instance;
-// const topicsHelper = require("../helpers/topics");
 
 module.exports.list = (req, res) => {
 	let result = ["contentUpdated", "contentCreated", "contentRemoved"];
@@ -16,8 +15,12 @@ module.exports.list = (req, res) => {
 		result = Emitter.listRegisterdEvents();
 	}
 
-	res.status(200).json(result);
+	res.status(200).json({ data: result });
 };
+
+module.exports.getMappers = (req, res) => res.status(200).json({ data: listener.mappers });
+
+module.exports.getEmitters = (req, res) => res.status(200).json({ data: listener.emitters });
 
 /**
  * @api {GET} /api/1.0.0/notifications/ Get all event setups
