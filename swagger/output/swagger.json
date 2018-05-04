@@ -1,1 +1,230 @@
-{}
+{
+	"swagger": "2.0",
+	"info": {
+		"title": "@wcm/generic-notifications",
+		"version": "0.0.1",
+		"description": "Generic notification module"
+	},
+	"paths": {
+		"/api/1.0.0/notifications/{uuid}": {
+			"delete": {
+				"tags": [
+					"Notifications"
+				],
+				"x-permission": [],
+				"description": "Delete an event setup.",
+				"consumes": [
+					"application/json"
+				],
+				"produces": [
+					"application/json"
+				],
+				"parameters": [
+					{
+						"name": "uuid",
+						"in": "path",
+						"required": true,
+						"type": "string",
+						"description": "Notification uuid "
+					}
+				],
+				"responses": {
+					"204": {
+						"description": "Empty response "
+					},
+					"400": {
+						"description": "Bad request ",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					},
+					"412": {
+						"description": "Precondition failed ",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			},
+			"get": {
+				"tags": [
+					"Notifications"
+				],
+				"x-permission": [],
+				"description": "Get an event setup",
+				"consumes": [
+					"application/json"
+				],
+				"produces": [
+					"application/json"
+				],
+				"parameters": [
+					{
+						"name": "uuid",
+						"in": "path",
+						"required": true,
+						"type": "string",
+						"description": "Notification uuid "
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success "
+					},
+					"400": {
+						"description": "Bad request ",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					},
+					"404": {
+						"description": "Not found ",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					},
+					"412": {
+						"description": "Precondition failed ",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			},
+			"put": {
+				"tags": [
+					"Notifications"
+				],
+				"x-permission": [],
+				"description": "Update Event setup",
+				"consumes": [
+					"application/json"
+				],
+				"produces": [
+					"application/json"
+				],
+				"parameters": [
+					{
+						"name": "uuid",
+						"in": "path",
+						"required": true,
+						"type": "string",
+						"description": "Notification uuid "
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Success "
+					},
+					"400": {
+						"description": "Bad request ",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					},
+					"404": {
+						"description": "Not found ",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					},
+					"412": {
+						"description": "Precondition failed ",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/api/1.0.0/notifications/": {
+			"get": {
+				"tags": [
+					"Notifications"
+				],
+				"x-permission": [],
+				"description": "Get all event setups",
+				"consumes": [
+					"application/json"
+				],
+				"produces": [
+					"application/json"
+				],
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "Success "
+					},
+					"500": {
+						"description": "Bad request ",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		},
+		"/api/1.0.0/notifications": {
+			"post": {
+				"tags": [
+					"Notifications"
+				],
+				"x-permission": [],
+				"description": "create an event.",
+				"consumes": [
+					"application/json"
+				],
+				"produces": [
+					"application/json"
+				],
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": ""
+					},
+					"400": {
+						"description": "Bad request ",
+						"schema": {
+							"$ref": "#/definitions/Error"
+						}
+					}
+				}
+			}
+		}
+	},
+	"definitions": {
+		"Error": {
+			"type": "object",
+			"description": "Error response object",
+			"properties": {
+				"type": {
+					"type": "string",
+					"description": "Link to Error page. "
+				},
+				"title": {
+					"type": "string",
+					"description": "Title of the error. "
+				},
+				"status": {
+					"type": "string",
+					"description": "HTTP status code. "
+				},
+				"identifier": {
+					"type": "string",
+					"description": "Unique ID as logged in the database. "
+				},
+				"code": {
+					"type": "string",
+					"description": "Error type code. "
+				}
+			},
+			"required": [
+				"type",
+				"title",
+				"status",
+				"identifier",
+				"code"
+			]
+		}
+	}
+}

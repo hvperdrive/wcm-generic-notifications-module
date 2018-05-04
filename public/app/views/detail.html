@@ -75,6 +75,28 @@
 											options="data.eventList[itemData.meta.source]">
 										</field>
 										<field
+											class="u-width-6-6"
+											label="'Mapper' | translate"
+											name="source"
+											type="'select'"
+											model="event.mapper"
+											ng-init="event.mapper = event.mapper || 'default'"
+											placeholder="'Select a mapper' | translate"
+											field-data="resourceForms.metaForm"
+											options="data.mappers">
+										</field>
+										<field
+											class="u-width-6-6"
+											label="'Emitter' | translate"
+											name="source"
+											type="'select'"
+											model="event.emitter"
+											ng-init="event.emitter = event.emitter || 'default'"
+											placeholder="'Select an emitter' | translate"
+											field-data="resourceForms.metaForm"
+											options="data.emitters">
+										</field>
+										<field
 											label="'Topic' | translate"
 											name="endpoint_{{$index}}"
 											type="'text'"

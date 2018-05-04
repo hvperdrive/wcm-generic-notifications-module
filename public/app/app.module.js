@@ -20,4 +20,3 @@
 		console.log("Notification module is loaded and available!"); // eslint-disable-line no-console
 	}]);
 })(window.angular);
-

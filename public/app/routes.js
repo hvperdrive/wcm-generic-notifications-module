@@ -50,6 +50,12 @@
 							EventsList: ["notificationsFactory", function(notificationsFactory) {
 								return notificationsFactory.get({ listController: "list" }).$promise;
 							}],
+							MappersList: ["notificationsFactory", function(notificationsFactory) {
+								return notificationsFactory.get({ listController: "mappers" }).$promise;
+							}],
+							EmittersList: ["notificationsFactory", function(notificationsFactory) {
+								return notificationsFactory.get({ listController: "emitters" }).$promise;
+							}],
 							ContentTypes: ["$stateParams", "contentTypeFactory", function($stateParams, contentTypeFactory) {
 								return contentTypeFactory.get({ limit: -1 }).$promise;
 							}],
