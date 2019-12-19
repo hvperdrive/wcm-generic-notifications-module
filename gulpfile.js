@@ -60,49 +60,20 @@ var bumpAngularModuleVersion = function bumpAngularModuleVersion(version) {
 };
 
 // Bump patch version (x.x.[patch version])
-gulp.task("bumpPatchVersion", function() {
+gulp.task("bumpPatch", function() {
     var newVersion = bumpVersion(2);
 
     return bumpAngularModuleVersion(newVersion);
 });
 // Bump minor version(x.[minor version].x)
-gulp.task("bumpMinorVersion", function() {
+gulp.task("bumpMinor", function() {
     var newVersion = bumpVersion(1);
 
     return bumpAngularModuleVersion(newVersion);
 });
 // Bump major version([magjor version].x.x)
-gulp.task("bumpMajorVersion", function() {
+gulp.task("bumpMajor", function() {
     var newVersion = bumpVersion(0);
 
     return bumpAngularModuleVersion(newVersion);
-});
-
-// Bump the patch version and then build
-gulp.task("buildPatch", function() {
-    runSequence(
-        "bumpPatchVersion",
-        "build"
-    );
-});
-// Bump the minor version and then build
-gulp.task("buildMinor", function() {
-    runSequence(
-        "bumpMinorVersion",
-        "build"
-    );
-});
-// Bump the major version and then build
-gulp.task("buildMajor", function() {
-    runSequence(
-        "bumpMajorVersion",
-        "build"
-    );
-});
-
-// build the module
-gulp.task("build", function() {
-    runSequence(
-        "templateCache"
-    );
 });
