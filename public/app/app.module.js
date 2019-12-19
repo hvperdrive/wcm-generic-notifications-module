@@ -1,19 +1,19 @@
 "use strict";
 
 (function(angular) {
-	angular.module("notifications_0.0.1.factories", []);
-	angular.module("notifications_0.0.1.services", ["notifications_0.0.1.factories"]);
-	angular.module("notifications_0.0.1.controllers", ["notifications_0.0.1.services"]);
-	angular.module("notifications_0.0.1.directives", ["notifications_0.0.1.controllers"]);
+	angular.module("notifications_0.1.0.factories", []);
+	angular.module("notifications_0.1.0.services", ["notifications_0.1.0.factories"]);
+	angular.module("notifications_0.1.0.controllers", ["notifications_0.1.0.services"]);
+	angular.module("notifications_0.1.0.directives", ["notifications_0.1.0.controllers"]);
 
-	angular.module("notifications_0.0.1", [
+	angular.module("notifications_0.1.0", [
 
 		"pelorus.services",
 
-		"notifications_0.0.1.factories",
-		"notifications_0.0.1.services",
-		"notifications_0.0.1.controllers",
-		"notifications_0.0.1.directives"
+		"notifications_0.1.0.factories",
+		"notifications_0.1.0.services",
+		"notifications_0.1.0.controllers",
+		"notifications_0.1.0.directives"
 
 	])
 	.run([function () {

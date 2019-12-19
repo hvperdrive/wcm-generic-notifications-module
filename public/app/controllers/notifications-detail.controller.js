@@ -1,7 +1,7 @@
 "use strict";
 
 (function() {
-	angular.module("notifications_0.0.1.controllers")
+	angular.module("notifications_0.1.0.controllers")
 		.controller("notificationsDetailController", [
 			"$scope",
 			"$controller",

@@ -1,6 +1,6 @@
 {
   "name": "@wcm/generic-notifications",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Generic notification module",
   "main": "app",
   "scripts": {
