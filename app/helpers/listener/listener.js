@@ -1,26 +1,35 @@
-"use strict";
-
-const R = require("ramda");
+const { pathOr, compose, always, forEach, reduce, __, or, invoker } = require("ramda");
 const Q = require("q");
 const request = require("request")
 
-const config = require("@wcm/module-helper").getConfig();
 const Emitter = require("@wcm/module-helper").emitter; // WCM emitter
 const moduleConfig = require("../variables");
 const EventsModel = require("../../models/notification");
 
+const toStringOrFalse = (input) => compose(
+	or(__, false),
+	invoker(0, "toString")
+  )(input || "");
+
 // FILTERS
 const contentFilter = (item) => {
-	const ct = R.pathOr(false, ["data", "contentType", "meta", "safeLabel"], item);
+	const itemCTuuid = compose(
+		toStringOrFalse,
+		pathOr(false, ["data", "contentType", "_id"])
+	)(item);
 
-	if (!ct) {
+	if (!itemCTuuid) {
 		return false;
 	}
 
 	return (data) => {
-		const ctLabel = R.pathOr(null, ["meta", "contentType", "meta", "safeLabel"], data);
+		const dataCTuuid = compose(
+			toStringOrFalse,
+			pathOr(__, ["meta", "contentType", "_id"], data),
+			pathOr(false, ["meta", "contentType"])
+		)(data);
 
-		return ct === ctLabel;
+		return itemCTuuid === dataCTuuid;
 	};
 };
 
@@ -87,7 +96,7 @@ class Listener {
 	constructor() {
 		this._config = null;
 		this._mappers = {
-			default: (eventName, event, data) => (data)
+			default: (eventName, event, data) => data
 		};
 		this._emitters = {
 			default: (eventName, event, data) => sendDefaultData(event, data)
@@ -158,7 +167,7 @@ class Listener {
 	// Get configured events based on the name and data;
 	_getRequiredEvents(name, data) {
 		if (this._config === null || !this._config[name]) {
-			return;
+			return [];
 		}
 
 		const eventGroup = this._config[name];
@@ -189,24 +198,21 @@ class Listener {
 
 		// Default emitter
 		return sendDefaultData(event, data);
-
-		console.log("SENDING EVENT", event, topic);
-		console.log("DATA:", data);
 	}
 
 	// Setup config (cache) based on configured events
 	_parseConfig(items) {
 		const setFilter = (event, item) => {
-			const source = R.pathOr(false, ["meta", "source"], item);
+			const source = pathOr(false, ["meta", "source"], item);
 
 			if (source === "content") {
 				return contentFilter(item);
 			}
 		};
 
-		const reduceConfigItem = (acc, item) => R.compose(
-			R.always(acc),
-			R.forEach((event) => {
+		const reduceConfigItem = (acc, item) => compose(
+			always(acc),
+			forEach((event) => {
 				const eventName = item.meta.source + "." + event.name;
 
 				if (!acc[eventName]) {
@@ -220,10 +226,10 @@ class Listener {
 					filter: setFilter(event, item),
 				});
 			}),
-			R.pathOr([], ["data", "events"])
+			pathOr([], ["data", "events"])
 		)(item);
 
-		return R.reduce(reduceConfigItem, {})(items);
+		return reduce(reduceConfigItem, {})(items);
 	};
 
 }
