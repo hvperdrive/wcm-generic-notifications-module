@@ -75,7 +75,7 @@
     "gulp-apidoc-swagger": "~0.2.2",
     "gulp-replace": "~0.5.4",
     "istanbul": "^0.4.5",
-    "mocha": "~4.0.1",
+    "mocha": "~10.2.0",
     "run-sequence": "~1.2.2",
     "sinon": "~4.0.2"
   }
